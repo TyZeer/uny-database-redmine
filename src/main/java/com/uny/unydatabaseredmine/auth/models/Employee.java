@@ -1,5 +1,6 @@
-package com.proj.recipe.models;
+package com.uny.unydatabaseredmine.auth.models;
 
+import com.uny.unydatabaseredmine.models.EmployeesRoles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,29 +16,24 @@ import java.util.List;
 
 @Data
 @Builder
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email")
-        })
-public class User implements UserDetails {
-
+@Table(name = "employees")
+@Entity
+public class Employee implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String name;
+    @Enumerated(EnumType.STRING)
+    private EmployeesRoles employeeRoles;
     private String email;
     private String password;
-    private String userRole;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    List<Role> roles;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().name())));
+        this.employeeRoles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().name())));
         return authorities;
     }
 

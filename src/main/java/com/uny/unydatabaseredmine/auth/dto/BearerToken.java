@@ -1,4 +1,4 @@
-package com.proj.recipe.dto;
+package com.uny.unydatabaseredmine.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.proj.recipe.dto;
+package com.uny.unydatabaseredmine.auth.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;

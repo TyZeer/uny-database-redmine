@@ -1,7 +1,8 @@
-package com.proj.recipe.repos;
+package com.uny.unydatabaseredmine.auth.repos;
 
-import com.proj.recipe.models.Role;
-import com.proj.recipe.models.RoleName;
+
+import com.uny.unydatabaseredmine.auth.models.Role;
+import com.uny.unydatabaseredmine.auth.models.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

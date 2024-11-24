@@ -1,6 +1,5 @@
-package com.proj.recipe.service;
+package com.uny.unydatabaseredmine.auth.service;
 
-import com.proj.recipe.models.User;
 import com.proj.recipe.repos.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CustomerUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     @Override

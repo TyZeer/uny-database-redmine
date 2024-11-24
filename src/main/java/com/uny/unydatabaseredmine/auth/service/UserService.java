@@ -1,4 +1,4 @@
-package com.proj.recipe.service;
+package com.uny.unydatabaseredmine.auth.service;
 
 import com.proj.recipe.dto.BearerToken;
 import com.proj.recipe.dto.LoginDto;
@@ -10,7 +10,6 @@ import com.proj.recipe.models.User;
 import com.proj.recipe.repos.RoleRepository;
 import com.proj.recipe.repos.UserRepository;
 import com.proj.recipe.service.interfaces.IUserService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

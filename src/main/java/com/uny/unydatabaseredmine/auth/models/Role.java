@@ -1,4 +1,4 @@
-package com.proj.recipe.models;
+package com.uny.unydatabaseredmine.auth.models;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

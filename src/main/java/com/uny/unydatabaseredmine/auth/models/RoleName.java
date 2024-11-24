@@ -1,4 +1,4 @@
-package com.proj.recipe.models;
+package com.uny.unydatabaseredmine.auth.models;
 
 public enum RoleName {
     USER,

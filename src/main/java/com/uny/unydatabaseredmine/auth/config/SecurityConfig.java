@@ -1,8 +1,8 @@
-package com.proj.recipe.config;
+package com.uny.unydatabaseredmine.auth.config;
 
-import com.proj.recipe.jwt.JwtAuthenticationFilter;
-import com.proj.recipe.jwt.JwtUtils;
-import com.proj.recipe.service.CustomerUserDetailsService;
+
+import com.uny.unydatabaseredmine.auth.jwt.JwtAuthenticationFilter;
+import com.uny.unydatabaseredmine.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomerUserDetailsService customerUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{

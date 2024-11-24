@@ -1,9 +1,9 @@
-package com.proj.recipe.controllers.auth;
+package com.uny.unydatabaseredmine.auth.auth;
 
-import com.proj.recipe.dto.BearerToken;
-import com.proj.recipe.dto.LoginDto;
-import com.proj.recipe.dto.RegisterDto;
-import com.proj.recipe.service.interfaces.IUserService;
+import com.uny.unydatabaseredmine.auth.dto.BearerToken;
+import com.uny.unydatabaseredmine.auth.dto.LoginDto;
+import com.uny.unydatabaseredmine.auth.dto.RegisterDto;
+import com.uny.unydatabaseredmine.auth.service.interfaces.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
