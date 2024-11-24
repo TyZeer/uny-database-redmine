@@ -1,6 +1,6 @@
 package com.uny.unydatabaseredmine.auth.models;
 
-import com.uny.unydatabaseredmine.models.EmployeesRoles;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,21 +19,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employees")
-@Entity
 public class Employee implements UserDetails {
     @Id
     private Long id;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private EmployeesRoles employeeRoles;
+
+    private List<Role> roles;
     private String email;
     private String password;
+
+    public Employee(String username, String email, String password) {
+        this.name = username;
+        this.email = email;
+        this.password = password;
+    }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        this.employeeRoles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().name())));
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().name())));
         return authorities;
     }
 

@@ -9,11 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Enumerated(EnumType.STRING)
     RoleName roleName;

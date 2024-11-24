@@ -1,71 +1,120 @@
 package com.uny.unydatabaseredmine.auth.auth;
 
+
 import com.uny.unydatabaseredmine.auth.dto.BearerToken;
 import com.uny.unydatabaseredmine.auth.dto.LoginDto;
-import com.uny.unydatabaseredmine.auth.dto.RegisterDto;
-import com.uny.unydatabaseredmine.auth.service.interfaces.IUserService;
-import lombok.RequiredArgsConstructor;
+import com.uny.unydatabaseredmine.auth.jwt.JwtUtils;
+import com.uny.unydatabaseredmine.auth.models.Employee;
+import com.uny.unydatabaseredmine.auth.models.Role;
+import com.uny.unydatabaseredmine.auth.models.RoleName;
+import com.uny.unydatabaseredmine.auth.payload.request.SignupRequest;
+import com.uny.unydatabaseredmine.auth.payload.response.JwtResponse;
+import com.uny.unydatabaseredmine.auth.payload.response.MessageResponse;
+import com.uny.unydatabaseredmine.auth.repos.EmployeeRepository;
+import com.uny.unydatabaseredmine.auth.repos.RoleRepository;
+import com.uny.unydatabaseredmine.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("/auth")
-@RequiredArgsConstructor
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
-    private final IUserService iUserService;
-    @GetMapping("/register")
-    public String getRegisterView(@ModelAttribute("registerDto") RegisterDto registerDto){
-        return "registration";
-    }
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-    @PostMapping("/register")
-    public ModelAndView registrationResult(@ModelAttribute RegisterDto registerDto){
-        try{
-            registerDto.setUserRole("USER");
-            var response = iUserService.register(registerDto);
-            ResponseEntity<BearerToken> responseEntity = (ResponseEntity<BearerToken>) response;
-            // Get the Bearer token from the ResponseEntity
-            String bearerTokenValue = Objects.requireNonNull(responseEntity.getBody()).getAccessToken();
+    @Autowired
+    EmployeeRepository userRepository;
 
-            // Set the Bearer token in the response header
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    PasswordEncoder encoder;
+
+    @Autowired
+    JwtUtils jwtUtils;
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser( @RequestBody LoginDto loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            Employee userDetails = (Employee) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
             HttpHeaders headers = new HttpHeaders();
-            String token = "Bearer " + bearerTokenValue;
-            headers.set("Authorization", token);
-            ModelAndView modelAndView = new ModelAndView("redirect:login");
-            modelAndView.addAllObjects(headers);
-            return modelAndView;
+            headers.add("Authorization", "Bearer " + jwt);
+
+            return ResponseEntity.ok().headers(headers).body(new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    roles));
         }catch (Exception e){
-            ModelAndView modelAndView = new ModelAndView("registration");
-            modelAndView.addObject("error","Ошибка регистрации");
-            return modelAndView;
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/login")
-    public String getLoginView(@ModelAttribute("loginDto") LoginDto loginDto){
-        return "login";
-    }
-    @PostMapping("/login")
-    public ModelAndView loginResult(@ModelAttribute LoginDto loginDto) {
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
         try {
-            var response = iUserService.authenticate(loginDto);
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", response);
-            ModelAndView modelAndView = new ModelAndView("redirect:index");
-            modelAndView.addAllObjects(headers);
-            return modelAndView;
-        } catch (Exception e) {
-            ModelAndView modelAndView = new ModelAndView("login");
-            modelAndView.addObject("error", "Ошибка регистрации");
-            return modelAndView;
+            if (bindingResult.hasErrors()) {
+                List<ObjectError> allErrors = bindingResult.getAllErrors();
+                return ResponseEntity
+                        .badRequest()
+                        .body(allErrors);
+            }
+
+            if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new MessageResponse("Имя пользователя занято"));
+            }
+
+            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new MessageResponse("Почта занята"));
+            }
+
+            Employee user = new Employee(signUpRequest.getName(),
+                    signUpRequest.getEmail(),
+                    encoder.encode(signUpRequest.getPassword()));
+
+            Set<Role> roles = new HashSet<>();
+
+            Role userRole = roleRepository.findByRoleName(RoleName.USER).orElse(null);
+            roles.add(userRole);
+            var listRoles = roles.stream().toList();
+
+
+            user.setRoles(listRoles);
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new MessageResponse("Пользователь успешно зарегестрирован"));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
