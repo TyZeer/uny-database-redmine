@@ -5,6 +5,7 @@ import com.uny.unydatabaseredmine.auth.service.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -19,6 +20,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
   @Autowired
@@ -33,6 +37,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     try {
+      Enumeration<String> headerNames = request.getHeaderNames();
+      while (headerNames.hasMoreElements()) {
+        String headerName = headerNames.nextElement();
+        logger.info("Header: {} = {}", headerName, request.getHeader(headerName));
+      }
+
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -55,12 +65,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   }
 
   private String parseJwt(HttpServletRequest request) {
-    String headerAuth = request.getHeader("Authorization");
+    Cookie[] cookies = request.getCookies();
 
-    if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-      return headerAuth.substring(7);
+    if (cookies != null) {
+      // Iterate through cookies to find the one with the "Authorization" key
+      for (Cookie cookie : cookies) {
+        if ("JWT".equals(cookie.getName())) {
+          // The JWT token should be stored in the cookie's value
+          String jwt = cookie.getValue();
+          if (jwt != null) {
+            // Extract the token by removing the "Bearer " prefix
+            return jwt;
+          }
+        }
+      }
     }
 
+    // Return null if no valid JWT token is found
     return null;
   }
 }

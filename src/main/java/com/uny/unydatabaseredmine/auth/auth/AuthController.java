@@ -12,7 +12,7 @@ import com.uny.unydatabaseredmine.auth.payload.response.JwtResponse;
 import com.uny.unydatabaseredmine.auth.payload.response.MessageResponse;
 import com.uny.unydatabaseredmine.auth.repos.EmployeeRepository;
 import com.uny.unydatabaseredmine.auth.repos.RoleRepository;
-import com.uny.unydatabaseredmine.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +65,6 @@ public class AuthController {
                     .collect(Collectors.toList());
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + jwt);
-
             return ResponseEntity.ok().headers(headers).body(new JwtResponse(jwt,
                     userDetails.getId(),
                     userDetails.getUsername(),
@@ -99,12 +98,13 @@ public class AuthController {
             }
 
             Employee user = new Employee(signUpRequest.getName(),
+                    signUpRequest.getJob_title(),
                     signUpRequest.getEmail(),
                     encoder.encode(signUpRequest.getPassword()));
 
             Set<Role> roles = new HashSet<>();
 
-            Role userRole = roleRepository.findByRoleName(RoleName.USER).orElse(null);
+            Role userRole = roleRepository.findByRoleName(RoleName.ROLE_USER).orElse(null);
             roles.add(userRole);
             var listRoles = roles.stream().toList();
 

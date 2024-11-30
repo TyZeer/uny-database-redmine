@@ -3,6 +3,7 @@ package com.uny.unydatabaseredmine.auth.jwt;
 
 import com.uny.unydatabaseredmine.auth.models.Employee;
 import com.uny.unydatabaseredmine.auth.service.CustomUserDetailsService;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -31,9 +32,10 @@ public class JwtUtils {
     Employee userPrincipal = (Employee) authentication.getPrincipal();
     Map<String, Object> claims = new HashMap<>();
     claims.put("user_id", userPrincipal.getId()); // здесь добавляю user_id
+    claims.put("roles", userPrincipal.getRoles());
 
     return Jwts.builder()
-            .setSubject(userPrincipal.getUsername())
+            .setSubject(userPrincipal.getEmail())
             .addClaims(claims)
             .setIssuedAt(new Date())
             .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
@@ -52,10 +54,6 @@ public class JwtUtils {
                .parseClaimsJws(token).getBody().getSubject();
   }
 
-  public Long getUserIdFromJwtToken(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody();
-    return claims.get("user_id", Long.class);
-  }
 
 
 

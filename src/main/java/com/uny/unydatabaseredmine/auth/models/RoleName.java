@@ -4,6 +4,6 @@ public enum RoleName {
     Developer,
     Manager,
     Tester,
-    ADMIN,
-    USER
+    ROLE_ADMIN,
+    ROLE_USER
 }

@@ -23,15 +23,16 @@ public class Employee implements UserDetails {
     @Id
     private Long id;
     private String name;
-
+    private String job_title;
     private List<Role> roles;
     private String email;
     private String password;
 
-    public Employee(String username, String email, String password) {
+    public Employee(String username, String job_title,String email, String password) {
         this.name = username;
         this.email = email;
         this.password = password;
+        this.job_title = job_title;
     }
 
 

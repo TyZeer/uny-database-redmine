@@ -20,7 +20,7 @@ public class SignupRequest  {
 
   @Getter
   @Setter
-  private String jobTitle;
+  private String job_title;
 
   public void setUsername(String username) {
     this.username = username;
