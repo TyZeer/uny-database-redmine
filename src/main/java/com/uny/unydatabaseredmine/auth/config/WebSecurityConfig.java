@@ -105,7 +105,10 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                     session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/projects/**").permitAll()
+                    .requestMatchers("/tasks/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/api/**").permitAll()
                     .requestMatchers("/").permitAll())
             .logout(logout -> logout
                     .logoutUrl("/logout")

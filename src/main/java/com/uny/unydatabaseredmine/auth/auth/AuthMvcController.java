@@ -80,7 +80,7 @@ public class AuthMvcController {
     public void setJwtTokenInCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("JWT", token);  // "JWT" is the name of the cookie
         cookie.setHttpOnly(true);  // Prevent JavaScript access to the cookie
-        cookie.setSecure(true);    // Only sent over HTTPS (for production)
+        cookie.setSecure(false);    // Only sent over HTTPS (for production)
         cookie.setPath("/");       // Ensure the cookie is sent for all paths
         cookie.setMaxAge(3600);    // 1 hour expiration time (adjust as necessary)
         response.addCookie(cookie);
