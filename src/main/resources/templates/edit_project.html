@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Project</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<h1>Edit Project</h1>
+<form th:action="@{/projects/edit/{id}(id=${project.id})}" method="post">
+    <label for="projectName">Project Name:</label>
+    <input type="text" id="projectName" name="name" th:value="${project.name}" required>
+    <br>
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required th:text="${project.description}"></textarea>
+    <br>
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="start_date" th:value="${project.startDate}" required>
+    <br>
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="end_date" th:value="${project.endDate}">
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
+</body>
+</html>

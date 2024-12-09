@@ -25,4 +25,24 @@ public class ProjectService {
     public void addProject(String name, String description, Date startDate, Date endDate) {
         projectRepository.addProject(name, description, startDate, endDate);
     }
+
+    public void createProject(Project project) {
+        projectRepository.addProject(
+                project.getName(),
+                project.getDescription(),
+                project.getStartDate(),
+                project.getEndDate()
+        );
+    }
+    public Project getProjectById(Long id) {
+        return  projectRepository.findById(id);
+    }
+
+    public void updateProject(Project project) {
+        projectRepository.updateTask(project);
+    }
+
+    public void deleteProject(Long id) {
+        projectRepository.deleteTask(id);
+    }
 }

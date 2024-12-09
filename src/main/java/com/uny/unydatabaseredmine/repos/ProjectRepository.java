@@ -33,6 +33,10 @@ public class ProjectRepository {
                 new java.sql.Date(endDate.getTime())
         );
     }
+    public Project findById(Long id) {
+        String sql = "SELECT * FROM projects WHERE id = ?";
+        return jdbcTemplate.query(sql, this::mapRowToProject, id).get(0);
+    }
 
     private Project mapRowToProject(ResultSet rs, int rowNum) throws SQLException {
         return new Project(
@@ -42,5 +46,19 @@ public class ProjectRepository {
                 rs.getDate("start_date"),
                 rs.getDate("end_date")
         );
+    }
+
+    public void updateTask(Project project) {
+        jdbcTemplate.update("CALL update_project(?, ?, ?, ?, ?)",
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                project.getStartDate(),
+                project.getEndDate()
+        );
+    }
+
+    public void deleteTask(Long id) {
+        jdbcTemplate.update("CALL delete_project(?)", id);
     }
 }

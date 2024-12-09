@@ -106,7 +106,11 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/projects/**").permitAll()
+                    .requestMatchers("/projects/edit/**").permitAll()
+                    .requestMatchers("/projects/delete/**").permitAll()
                     .requestMatchers("/tasks/**").permitAll()
+                    .requestMatchers("/tasks/edit/**").permitAll()
+                    .requestMatchers("/tasks/delete/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/api/**").permitAll()
                     .requestMatchers("/").permitAll())

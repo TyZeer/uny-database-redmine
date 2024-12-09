@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<h1>Edit Task</h1>
+<form action="/tasks/edit/{{ task_id }}" method="post">
+    <label for="taskName">Task Name:</label>
+    <input type="text" id="taskName" name="name" value="{{ task.name }}" required>
+    <br>
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required>{{ task.description }}</textarea>
+    <br>
+    <label for="projectId">Project:</label>
+    <select id="projectId" name="project_id" required>
+        {% for project in projects %}
+        <option value="{{ project.id }}" {% if project.id == task.project_id %}selected{% endif %}>{{ project.name }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
+</body>
+</html>

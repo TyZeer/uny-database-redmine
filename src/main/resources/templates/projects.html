@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
 <div class="container mt-5">
     <h1 class="mb-4">Projects</h1>
 
-    <!-- Фильтр проектов -->
+    <!-- Filter Projects -->
     <form method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-5">
@@ -25,12 +25,12 @@
         </div>
     </form>
 
-    <!-- Кнопка создания проекта только для ADMIN -->
+    <!-- Create Project Button (ADMIN only) -->
     <div th:if="${session.role == 'ADMIN'}" class="mb-4">
         <a href="/projects/create" class="btn btn-success">Create Project</a>
     </div>
 
-    <!-- Список проектов -->
+    <!-- List of Projects -->
     <div class="row">
         <div class="col-md-4 mb-3" th:each="project : ${projects}">
             <div class="card">
@@ -39,10 +39,13 @@
                     <p class="card-text" th:text="${project.description}"></p>
                     <a th:href="'/projects/' + ${project.id}" class="btn btn-primary">View Details</a>
 
-                    <!-- Кнопки редактирования и удаления только для ADMIN -->
+                    <!-- Edit and Delete Buttons (ADMIN only) -->
                     <div th:if="${session.role == 'ADMIN'}" class="mt-3">
                         <a th:href="'/projects/edit/' + ${project.id}" class="btn btn-warning">Edit</a>
-                        <a th:href="'/projects/delete/' + ${project.id}" class="btn btn-danger">Delete</a>
+                        <!-- Delete Button as a Form -->
+                        <form th:action="@{/projects/delete/{id}(id=${project.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -29,4 +29,27 @@ public class TaskService {
     public void addTask(Long projectId, String title, String category, Date dueDate, int totalTimeSpent, int isCompleted) {
         taskRepository.addTask(projectId, title, category, dueDate, totalTimeSpent, isCompleted);
     }
+    public void createTask(Task task) {
+        taskRepository.addTask(
+                task.getProjectId(),
+                task.getTitle(),
+                task.getCategory().name(),
+                task.getDueDate(),
+                task.getTotalTimeSpent(),
+                task.getIsCompleted()
+        );
+    }
+
+    public Task getTaskById(Long id) {
+       return taskRepository.findById(id);
+    }
+
+    public void updateTask(Task task) {
+        taskRepository.updateTask(task);
+
+    }
+
+    public void deleteTask(Long id) {
+        taskRepository.deleteTask(id);
+    }
 }

@@ -104,7 +104,7 @@ public class AuthController {
 
             Set<Role> roles = new HashSet<>();
 
-            Role userRole = roleRepository.findByRoleName(RoleName.ROLE_USER).orElse(null);
+            Role userRole = roleRepository.findByRoleName(RoleName.ROLE_ADMIN).orElse(null);
             roles.add(userRole);
             var listRoles = roles.stream().toList();
 
@@ -112,7 +112,7 @@ public class AuthController {
             user.setRoles(listRoles);
             userRepository.save(user);
 
-            return ResponseEntity.ok(new MessageResponse("Пользователь успешно зарегестрирован"));
+            return ResponseEntity.ok(new MessageResponse("Пользователь успешно зарегистрирован"));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

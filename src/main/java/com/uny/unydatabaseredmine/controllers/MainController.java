@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')  or hasRole('ADMIN')")
     public String showHomePage(Authentication authentication, Model model) {
         String username = authentication.getName(); // Получаем имя пользователя
         model.addAttribute("username", username);

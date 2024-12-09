@@ -1,6 +1,7 @@
 package com.uny.unydatabaseredmine.repos;
 
 import com.uny.unydatabaseredmine.models.Categories;
+import com.uny.unydatabaseredmine.models.Project;
 import com.uny.unydatabaseredmine.models.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Repository
 public class TaskRepository {
+
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -36,6 +38,12 @@ public class TaskRepository {
         String sql = "INSERT INTO tasks (project_id, title, category, due_date, total_time_spent, is_completed) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, projectId, title, category, new java.sql.Date(dueDate.getTime()), totalTimeSpent, isCompleted);
     }
+    public Task findById(Long id) {
+
+        String sql = "SELECT * FROM tasks WHERE id = ? LIMIT 1";
+        return jdbcTemplate.query(sql, this::mapRowToTask, id).get(0);
+
+    }
 
     private Task mapRowToTask(ResultSet rs, int rowNum) throws SQLException {
         return new Task(
@@ -47,5 +55,21 @@ public class TaskRepository {
                 rs.getInt("total_time_spent"),
                 rs.getInt("is_completed")
         );
+    }
+
+    public void updateTask(Task task) {
+        jdbcTemplate.update("CALL update_task(?, ?, ?, ?, ?, ?)",
+                task.getId(),
+                task.getProjectId(),
+                task.getTitle(),
+                task.getCategory(),
+                task.getDueDate(),
+                task.getTotalTimeSpent(),
+                task.getIsCompleted()
+        );
+    }
+
+    public void deleteTask(Long id) {
+        jdbcTemplate.update("call delete_task(?)", id);
     }
 }

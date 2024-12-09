@@ -1,9 +1,11 @@
 package com.uny.unydatabaseredmine.controllers;
 
+import com.uny.unydatabaseredmine.auth.config.RoleUtil;
 import com.uny.unydatabaseredmine.models.Project;
 import com.uny.unydatabaseredmine.models.Task;
 import com.uny.unydatabaseredmine.services.ProjectService;
 import com.uny.unydatabaseredmine.services.TaskService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public class ProjectController {
 
     @Autowired
@@ -28,7 +30,7 @@ public class ProjectController {
     @GetMapping("/projects")
     public String listProjects(@RequestParam(value = "name", required = false) String name,
                                @RequestParam(value = "startDate", required = false) String startDate,
-                               Model model) {
+                               Model model, HttpSession session) {
         List<Project> projects = projectService.getAllProjects();
         if (name != null) {
             projects = projects.stream()
@@ -41,6 +43,8 @@ public class ProjectController {
                     .toList();
         }
         model.addAttribute("projects", projects);
+        RoleUtil.extractAndSetUserRole(session);
+        model.addAttribute("role", session.getAttribute("role"));
         return "projects";
     }
 
@@ -68,7 +72,7 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/projects/delete/{id}")
     public String deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return "redirect:/projects";

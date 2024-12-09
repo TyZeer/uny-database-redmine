@@ -21,7 +21,7 @@ public class EmployeeController {
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -1,7 +1,9 @@
 package com.uny.unydatabaseredmine.controllers;
 
+import com.uny.unydatabaseredmine.auth.config.RoleUtil;
 import com.uny.unydatabaseredmine.models.Task;
 import com.uny.unydatabaseredmine.services.TaskService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('USER')  or hasRole('ADMIN')")
 public class TaskController {
 
     @Autowired
@@ -23,7 +25,7 @@ public class TaskController {
     @GetMapping("/tasks")
     public String listTasks(@RequestParam(value = "title", required = false) String title,
                             @RequestParam(value = "category", required = false) String category,
-                            Model model) {
+                            Model model, HttpSession session) {
         List<Task> tasks = taskService.getAllTasks();
         if (title != null) {
             tasks = tasks.stream()
@@ -36,6 +38,8 @@ public class TaskController {
                     .toList();
         }
         model.addAttribute("tasks", tasks);
+        RoleUtil.extractAndSetUserRole(session);
+        model.addAttribute("role", session.getAttribute("role"));
         return "tasks";
     }
 
@@ -74,7 +78,7 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/tasks/delete/{id}")
     public String deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return "redirect:/tasks";
