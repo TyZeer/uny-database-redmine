@@ -27,7 +27,12 @@ public class TaskService {
     }
 
     public void addTask(Long projectId, String title, String category, Date dueDate, int totalTimeSpent, int isCompleted) {
-        taskRepository.addTask(projectId, title, category, dueDate, totalTimeSpent, isCompleted);
+        boolean isCmp;
+        if (isCompleted == 0)
+            isCmp = true;
+        else
+            isCmp = false;
+        taskRepository.addTask(projectId, title, category, dueDate, totalTimeSpent, isCmp);
     }
     public void createTask(Task task) {
         taskRepository.addTask(
@@ -36,7 +41,7 @@ public class TaskService {
                 task.getCategory().name(),
                 task.getDueDate(),
                 task.getTotalTimeSpent(),
-                task.getIsCompleted()
+                task.isCompleted()
         );
     }
 

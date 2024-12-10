@@ -1,28 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Task</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-<h1>Edit Task</h1>
-<form action="/tasks/edit/{{ task_id }}" method="post">
+<form th:action="@{/tasks/edit/{id}(id=${task.id})}" method="post" id="editTaskForm">
+    <!-- Task Name -->
     <label for="taskName">Task Name:</label>
-    <input type="text" id="taskName" name="name" value="{{ task.name }}" required>
+    <input type="text" id="taskName" name="title" th:value="${task.title}" required>
     <br>
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required>{{ task.description }}</textarea>
+
+    <!-- Project Selection -->
+<!--    <label for="projectId">Project:</label>-->
+<!--    <select id="projectId" name="projectId" required>-->
+<!--        <option value="" disabled selected>Please select a project</option>-->
+<!--        <option th:each="project : ${projects}"-->
+<!--                th:value="${project.id}"-->
+<!--                th:text="${project.name}"-->
+<!--                th:selected="${task.projectId == project.id}">-->
+<!--        </option>-->
+<!--    </select>-->
     <br>
-    <label for="projectId">Project:</label>
-    <select id="projectId" name="project_id" required>
-        {% for project in projects %}
-        <option value="{{ project.id }}" {% if project.id == task.project_id %}selected{% endif %}>{{ project.name }}</option>
-        {% endfor %}
+
+    <!-- Category Selection -->
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+        <option value="Bug" th:selected="${task.category == 'Bug'}">Bug</option>
+        <option value="Feature" th:selected="${task.category == 'Feature'}">Feature</option>
+        <option value="Improvement" th:selected="${task.category == 'Improvement'}">Improvement</option>
+        <option value="Task" th:selected="${task.category == 'Task'}">Task</option>
     </select>
     <br>
+
+    <!-- Due Date -->
+    <label for="dueDate">Due Date:</label>
+    <input type="date" id="dueDate" name="dueDate" th:value="${task.dueDate}" required>
+    <br>
+
+    <!-- Total Time Spent -->
+    <label for="totalTimeSpent">Total Time Spent (in minutes):</label>
+    <input type="number" id="totalTimeSpent" name="totalTimeSpent" th:value="${task.totalTimeSpent}" min="0">
+    <br>
+
+    <!-- Completed Checkbox -->
+<!--    <label for="isCompleted">Is Completed:</label>-->
+<!--    <input type="checkbox" id="isCompleted" name="isCompleted" th:checked="${task.isCompleted}">-->
+
+    <!-- Hidden Input for Unchecked Checkbox -->
+<!--    <input type="hidden" name="isCompleted" value="false">-->
+    <br>
+
     <button type="submit">Save Changes</button>
 </form>
-</body>
-</html>
+
+<!--<script>-->
+<!--    document.getElementById("editTaskForm").addEventListener("submit", function(event) {-->
+<!--        const isCompletedCheckbox = document.getElementById("isCompleted");-->
+
+<!--        // If the checkbox is checked, it will submit 'true'-->
+<!--        if (isCompletedCheckbox.checked) {-->
+<!--            // Override the hidden input value to 'true' when checked-->
+<!--            document.querySelector('input[name="isCompleted"]').value = 'true';-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->

@@ -2,6 +2,7 @@ package com.uny.unydatabaseredmine.controllers;
 
 import com.uny.unydatabaseredmine.auth.config.RoleUtil;
 import com.uny.unydatabaseredmine.models.Task;
+import com.uny.unydatabaseredmine.services.ProjectService;
 import com.uny.unydatabaseredmine.services.TaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ProjectService projectService;
 
     @GetMapping("/tasks")
     public String listTasks(@RequestParam(value = "title", required = false) String title,
@@ -62,6 +65,8 @@ public class TaskController {
 
     @PostMapping("/tasks/create")
     public String createTask(@ModelAttribute Task task) {
+        task.setCompleted(false);
+        task.setTotalTimeSpent(0);
         taskService.createTask(task);
         return "redirect:/tasks";
     }
@@ -69,11 +74,16 @@ public class TaskController {
     @GetMapping("/tasks/edit/{id}")
     public String editTaskForm(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskService.getTaskById(id));
+        model.addAttribute("projects", projectService.getAllProjects());
         return "edit_task";
     }
 
-    @PostMapping("/tasks/edit")
-    public String editTask(@ModelAttribute Task task) {
+    @PostMapping("/tasks/edit/{id}")
+    public String editTask(@ModelAttribute Task task, @PathVariable Long id) {
+        task.setId(id);
+        task.setCompleted(false);
+        var tmTask = taskService.getTaskById(id);
+        tmTask.setProjectId(task.getProjectId());
         taskService.updateTask(task);
         return "redirect:/tasks";
     }

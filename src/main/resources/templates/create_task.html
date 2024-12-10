@@ -9,21 +9,79 @@
 <body>
 <h1>Create Task</h1>
 <form action="/tasks/create" method="post">
+    <!-- Task Name -->
     <label for="taskName">Task Name:</label>
-    <input type="text" id="taskName" name="name" required>
+    <input type="text" id="taskName" name="title" required>
     <br>
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required></textarea>
-    <br>
+
+    <!-- Project Selection -->
     <label for="projectId">Project:</label>
-    <select id="projectId" name="project_id" required>
-        <!-- Options will be dynamically generated -->
-        {% for project in projects %}
-        <option value="{{ project.id }}">{{ project.name }}</option>
-        {% endfor %}
+    <select id="projectId" name="projectId" required>
+        <option value="" disabled selected>Loading projects...</option>
     </select>
     <br>
+
+    <!-- Category Selection -->
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+        <option value="" disabled selected>Select a category</option>
+        <option value="Bug">Bug</option>
+        <option value="Feature">Feature</option>
+        <option value="Improvement">Improvement</option>
+        <option value="Task">Task</option>
+    </select>
+    <br>
+
+    <!-- Due Date -->
+    <label for="dueDate">Due Date:</label>
+    <input type="date" id="dueDate" name="dueDate">
+    <br>
+
     <button type="submit">Create</button>
 </form>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const projectDropdown = document.getElementById("projectId");
+
+        // Function to fetch projects from the server
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch("/projects/api");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch projects. Please try again.");
+                }
+                const projects = await response.json();
+                populateProjectDropdown(projects);
+            } catch (error) {
+                console.error(error);
+                alert("Could not load projects. Check your connection or contact support.");
+            }
+        };
+
+        // Populate the project dropdown with available projects
+        const populateProjectDropdown = (projects) => {
+            projectDropdown.innerHTML = ""; // Clear existing options
+            if (projects.length > 0) {
+                projects.forEach(project => {
+                    const option = document.createElement("option");
+                    option.value = project.id; // Use project ID as the value
+                    option.textContent = project.name; // Use project name as the display text
+                    projectDropdown.appendChild(option);
+                });
+            } else {
+                const noProjectsOption = document.createElement("option");
+                noProjectsOption.value = "";
+                noProjectsOption.textContent = "No projects available";
+                noProjectsOption.disabled = true;
+                projectDropdown.appendChild(noProjectsOption);
+            }
+        };
+
+        // Call the fetch function on page load
+        fetchProjects();
+    });
+</script>
 </body>
 </html>

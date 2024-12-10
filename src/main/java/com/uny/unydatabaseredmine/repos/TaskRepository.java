@@ -34,9 +34,14 @@ public class TaskRepository {
         return jdbcTemplate.query(sql, this::mapRowToTask, category);
     }
 
-    public void addTask(Long projectId, String title, String category, Date dueDate, int totalTimeSpent, int isCompleted) {
+    public void addTask(Long projectId, String title, String category, Date dueDate, int totalTimeSpent, boolean isCompleted) {
+        int isCmp;
+        if (isCompleted)
+            isCmp = 1;
+        else
+            isCmp = 0;
         String sql = "INSERT INTO tasks (project_id, title, category, due_date, total_time_spent, is_completed) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, projectId, title, category, new java.sql.Date(dueDate.getTime()), totalTimeSpent, isCompleted);
+        jdbcTemplate.update(sql, projectId, title, category, new java.sql.Date(dueDate.getTime()), totalTimeSpent, isCmp);
     }
     public Task findById(Long id) {
 
@@ -46,6 +51,12 @@ public class TaskRepository {
     }
 
     private Task mapRowToTask(ResultSet rs, int rowNum) throws SQLException {
+        boolean isCompleted;
+        if(rs.getInt("is_completed") > 0){
+            isCompleted = true;
+        }
+        else
+            isCompleted = false;
         return new Task(
                 rs.getLong("id"),
                 rs.getLong("project_id"),
@@ -53,19 +64,19 @@ public class TaskRepository {
                 Categories.valueOf(rs.getString("category")),
                 rs.getDate("due_date"),
                 rs.getInt("total_time_spent"),
-                rs.getInt("is_completed")
+                isCompleted
         );
     }
 
     public void updateTask(Task task) {
+        int completed = task.isCompleted() ? 1 : 0;
         jdbcTemplate.update("CALL update_task(?, ?, ?, ?, ?, ?)",
                 task.getId(),
-                task.getProjectId(),
                 task.getTitle(),
-                task.getCategory(),
+                task.getCategory().name(),
                 task.getDueDate(),
                 task.getTotalTimeSpent(),
-                task.getIsCompleted()
+                completed
         );
     }
 

@@ -8,6 +8,7 @@ import com.uny.unydatabaseredmine.services.TaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -26,6 +28,11 @@ public class ProjectController {
 
     @Autowired
     private TaskService taskService;
+    @GetMapping("/projects/api")
+    public ResponseEntity<?> listProjects() {
+        List<Project> projects = projectService.getAllProjects();
+        return ResponseEntity.ok(projects);
+    }
 
     @GetMapping("/projects")
     public String listProjects(@RequestParam(value = "name", required = false) String name,
@@ -66,9 +73,15 @@ public class ProjectController {
         return "edit_project";
     }
 
-    @PostMapping("/projects/edit")
-    public String editProject(@ModelAttribute Project project) {
-        projectService.updateProject(project);
+    @PostMapping("/projects/edit/{id}")
+    public String editProject(@ModelAttribute Project updatedProject, @PathVariable Long id) {
+        updatedProject.setId(id);
+        Project existingProject = projectService.getProjectById(updatedProject.getId());
+        existingProject.setName(updatedProject.getName() != null ? updatedProject.getName() : existingProject.getName());
+        existingProject.setDescription(updatedProject.getDescription() != null ? updatedProject.getDescription() : existingProject.getDescription());
+        existingProject.setStartDate(updatedProject.getStartDate() != null ? updatedProject.getStartDate() : existingProject.getStartDate());
+        existingProject.setEndDate(updatedProject.getEndDate() != null ? updatedProject.getEndDate() : existingProject.getEndDate());
+        projectService.updateProject(existingProject);
         return "redirect:/projects";
     }
 
@@ -92,5 +105,30 @@ public class ProjectController {
             model.addAttribute("tasks", tasks);
         }
         return "project-details";
+    }
+
+    @GetMapping("/projects/{id}/assign-task")
+    public String assignTaskToProjectForm(@PathVariable Long id, Model model) {
+        Project project = projectService.getProjectById(id);
+        List<Task> tasks = taskService.getAllTasks(); // Fetch existing tasks
+        model.addAttribute("project", project);
+        model.addAttribute("tasks", tasks);
+        return "assign_task_to_project";  // This is the new template where users will assign tasks
+    }
+
+    @PostMapping("/projects/{projectId}/assign-task")
+    public String assignTaskToProject(@PathVariable Long projectId, Long task, RedirectAttributes redirectAttributes) {
+        Project project = projectService.getProjectById(projectId);
+        Task taskCreated = taskService.getTaskById(task);
+
+        if (project != null && task != null) {
+            taskCreated.setProjectId(projectId);  // Link the task to the project
+            taskService.updateTask(taskCreated);   // Update the task with the new project
+            redirectAttributes.addFlashAttribute("message", "Task successfully assigned to the project.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to assign task.");
+        }
+
+        return "redirect:/projects/" + projectId; // Redirect back to the project details page
     }
 }

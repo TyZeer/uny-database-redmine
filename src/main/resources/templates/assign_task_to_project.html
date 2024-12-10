@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Assign Task to Project</title>
+</head>
+<body>
+<h1>Assign Task to Project: <span th:text="${project.name}"></span></h1>
+
+<form th:action="@{/projects/{id}/assign-task(id=${project.id})}" method="post">
+    <label for="task">Select Task:</label>
+    <select id="task" name="task">
+        <option th:each="task : ${tasks}"
+                th:value="${task.id}"
+                th:text="${task.title}"></option>
+    </select>
+
+    <button type="submit">Assign Task</button>
+</form>
+</body>
+</html>

@@ -61,4 +61,5 @@ public class ProjectRepository {
     public void deleteTask(Long id) {
         jdbcTemplate.update("CALL delete_project(?)", id);
     }
+
 }

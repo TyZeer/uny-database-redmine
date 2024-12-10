@@ -107,6 +107,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/projects/**").permitAll()
                     .requestMatchers("/projects/edit/**").permitAll()
+                    .requestMatchers("/projects/create").permitAll()
                     .requestMatchers("/projects/delete/**").permitAll()
                     .requestMatchers("/tasks/**").permitAll()
                     .requestMatchers("/tasks/edit/**").permitAll()
