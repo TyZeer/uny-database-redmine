@@ -16,4 +16,10 @@ public class TaskAssignees {
 
     @Enumerated(EnumType.STRING)
     private Severity severity;
+
+    public TaskAssignees(long taskId, long employeeId, Severity severity) {
+        this.taskId = taskId;
+        this.employeeId = employeeId;
+        this.severity = severity;
+    }
 }

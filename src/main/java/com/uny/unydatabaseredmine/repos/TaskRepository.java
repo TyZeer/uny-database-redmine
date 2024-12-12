@@ -83,4 +83,9 @@ public class TaskRepository {
     public void deleteTask(Long id) {
         jdbcTemplate.update("call delete_task(?)", id);
     }
+
+    public void assignTaskToProject(Long projectId, Long taskId) {
+        String sql = "UPDATE tasks SET project_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, projectId, taskId);
+    }
 }

@@ -53,6 +53,9 @@ public class TaskService {
         taskRepository.updateTask(task);
 
     }
+    public void assignTaskToProject(Long projectId, Long taskId) {
+        taskRepository.assignTaskToProject(projectId, taskId);
+    }
 
     public void deleteTask(Long id) {
         taskRepository.deleteTask(id);

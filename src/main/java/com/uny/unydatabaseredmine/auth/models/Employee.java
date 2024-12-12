@@ -34,6 +34,14 @@ public class Employee implements UserDetails {
         this.password = password;
         this.job_title = job_title;
     }
+    public Employee(Long id, String username, String job_title,String email, String password) {
+        this.id = id;
+        this.name = username;
+        this.email = email;
+        this.password = password;
+        this.job_title = job_title;
+    }
+
 
 
     @Override

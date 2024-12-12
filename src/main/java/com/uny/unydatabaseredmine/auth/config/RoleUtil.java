@@ -1,5 +1,7 @@
 package com.uny.unydatabaseredmine.auth.config;
 
+import com.uny.unydatabaseredmine.auth.models.Employee;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -18,5 +20,13 @@ public class RoleUtil {
                     .orElse("user"); // Default role if none is found
             session.setAttribute("role", role);
         }
+    }
+    public static Long getUserId(HttpSession session) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Employee employee = (Employee) authentication.getPrincipal();
+            return employee.getId();
+        }
+        return null;
     }
 }

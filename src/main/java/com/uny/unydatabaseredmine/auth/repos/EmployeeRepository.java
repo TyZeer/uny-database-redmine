@@ -3,11 +3,14 @@ package com.uny.unydatabaseredmine.auth.repos;
 import com.uny.unydatabaseredmine.auth.models.Employee;
 import com.uny.unydatabaseredmine.auth.models.Role;
 import com.uny.unydatabaseredmine.auth.models.RoleName;
+import com.uny.unydatabaseredmine.models.Project;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 @Repository
@@ -111,6 +114,26 @@ public class EmployeeRepository {
     private void saveEmployeeRole(Long employeeId, Long roleId) {
         String sql = "INSERT INTO employee_roles (employee_id, role_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, employeeId, roleId);
+    }
+    public String findEmployeeById(Long employeeId) {
+        String sql = "SELECT * FROM employees WHERE id = ?";
+        Employee employee = jdbcTemplate.queryForObject(sql, this::mapRowToEmployee,employeeId);
+        assert employee != null;
+        return employee.getName();
+    }
+    public List<Employee> findAll() {
+        String sql = "SELECT * FROM employees";
+        return jdbcTemplate.query(sql,this::mapRowToEmployee);
+
+    }
+    private Employee mapRowToEmployee(ResultSet rs, int rowNum) throws SQLException {
+        return new Employee(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("job_title"),
+                rs.getString("email"),
+                rs.getString("password")
+        );
     }
 }
 

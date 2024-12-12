@@ -1,9 +1,10 @@
 package com.uny.unydatabaseredmine.controllers;
 
 import com.uny.unydatabaseredmine.auth.config.RoleUtil;
+import com.uny.unydatabaseredmine.models.Comment;
+import com.uny.unydatabaseredmine.models.Severity;
 import com.uny.unydatabaseredmine.models.Task;
-import com.uny.unydatabaseredmine.services.ProjectService;
-import com.uny.unydatabaseredmine.services.TaskService;
+import com.uny.unydatabaseredmine.services.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,12 @@ public class TaskController {
     private TaskService taskService;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private TaskAssigneesService taskAssigneesService;
 
     @GetMapping("/tasks")
     public String listTasks(@RequestParam(value = "title", required = false) String title,
@@ -31,17 +39,24 @@ public class TaskController {
                             Model model, HttpSession session) {
         List<Task> tasks = taskService.getAllTasks();
         if (title != null) {
-            tasks = tasks.stream()
-                    .filter(t -> t.getTitle().toLowerCase().contains(title.toLowerCase()))
-                    .toList();
+            if(title != ""){
+                tasks = tasks.stream()
+                        .filter(t -> t.getTitle().toLowerCase().contains(title.toLowerCase()))
+                        .toList();
+            }
+
         }
         if (category != null) {
-            tasks = tasks.stream()
-                    .filter(t -> t.getCategory().toString().equalsIgnoreCase(category))
-                    .toList();
+            if(category != ""){
+                tasks = tasks.stream()
+                        .filter(t -> t.getCategory().toString().equalsIgnoreCase(category))
+                        .toList();
+            }
+
         }
         model.addAttribute("tasks", tasks);
         RoleUtil.extractAndSetUserRole(session);
+
         model.addAttribute("role", session.getAttribute("role"));
         return "tasks";
     }
@@ -55,6 +70,19 @@ public class TaskController {
                 .findFirst()
                 .orElse(null);
         model.addAttribute("task", task);
+        assert task != null;
+        List<Comment> comments = commentService.getCommentsByTaskId(task.getId());
+        model.addAttribute("comments", comments);
+        model.addAttribute("employees", employeeService.getAllEmployees());
+        Long employeeId = taskAssigneesService.getAssignee(task.getId());
+        String employeeName;
+        if (employeeId != null) {
+            employeeName = employeeService.getEmployeeById(employeeId);
+        }
+        else
+            employeeName = "";
+
+        model.addAttribute("assignedEmployee", employeeName);
         return "task-details";
     }
     @GetMapping("/tasks/create")
@@ -75,6 +103,7 @@ public class TaskController {
     public String editTaskForm(@PathVariable Long id, Model model) {
         model.addAttribute("task", taskService.getTaskById(id));
         model.addAttribute("projects", projectService.getAllProjects());
+
         return "edit_task";
     }
 
@@ -92,6 +121,27 @@ public class TaskController {
     public String deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return "redirect:/tasks";
+    }
+    @PostMapping("/tasks/{taskId}/add-comment")
+    public String addCommentToTask(@PathVariable Long taskId, @RequestParam String commentText, RedirectAttributes redirectAttributes, HttpSession session) {
+        // Assuming the employeeId is taken from the logged-in user (for example, from session)
+        Long employeeId = RoleUtil.getUserId(session); // Method to fetch the logged-in user's ID
+        Comment newComment = new Comment();
+        newComment.setTaskId(taskId);
+        newComment.setEmployeeId(employeeId);
+        newComment.setCommentText(commentText);
+        newComment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        commentService.saveComment(newComment);
+
+        redirectAttributes.addFlashAttribute("message", "Comment added successfully.");
+        return "redirect:/tasks/" + taskId;  // Redirect back to the task details page
+    }
+
+    @PostMapping("/tasks/{taskId}/assign-employee")
+    public String assignEmployeeToTask(@PathVariable Long taskId, @RequestParam Long employeeId, @RequestParam String severity) {
+        taskAssigneesService.save(taskId, employeeId, Severity.valueOf(severity));
+        return "redirect:/tasks/" + taskId;
     }
 
 

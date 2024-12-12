@@ -99,8 +99,6 @@ public class WebSecurityConfig {
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-//            .exceptionHandling(exception ->
-//                    exception.authenticationEntryPoint(authenticationEntryPoint()))
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
             .authorizeHttpRequests(auth -> auth

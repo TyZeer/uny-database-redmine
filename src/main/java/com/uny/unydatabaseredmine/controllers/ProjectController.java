@@ -15,9 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -110,9 +108,10 @@ public class ProjectController {
     @GetMapping("/projects/{id}/assign-task")
     public String assignTaskToProjectForm(@PathVariable Long id, Model model) {
         Project project = projectService.getProjectById(id);
-        List<Task> tasks = taskService.getAllTasks(); // Fetch existing tasks
+        List<Task> tasks = taskService.getAllTasks();
+        List<Task> suitableTasks = tasks.stream().filter(task -> !Objects.equals(task.getProjectId(), project.getId())).toList();
         model.addAttribute("project", project);
-        model.addAttribute("tasks", tasks);
+        model.addAttribute("tasks", suitableTasks);
         return "assign_task_to_project";  // This is the new template where users will assign tasks
     }
 
@@ -123,7 +122,7 @@ public class ProjectController {
 
         if (project != null && task != null) {
             taskCreated.setProjectId(projectId);  // Link the task to the project
-            taskService.updateTask(taskCreated);   // Update the task with the new project
+            taskService.assignTaskToProject(taskCreated.getProjectId(), taskCreated.getId());   // Update the task with the new project
             redirectAttributes.addFlashAttribute("message", "Task successfully assigned to the project.");
         } else {
             redirectAttributes.addFlashAttribute("error", "Failed to assign task.");
