@@ -84,19 +84,16 @@ public class AuthController {
                         .badRequest()
                         .body(allErrors);
             }
-
             if (userRepository.existsByUsername(signUpRequest.getUsername())) {
                 return ResponseEntity
                         .badRequest()
                         .body(new MessageResponse("Имя пользователя занято"));
             }
-
             if (userRepository.existsByEmail(signUpRequest.getEmail())) {
                 return ResponseEntity
                         .badRequest()
                         .body(new MessageResponse("Почта занята"));
             }
-
             Employee user = new Employee(signUpRequest.getName(),
                     signUpRequest.getJob_title(),
                     signUpRequest.getEmail(),

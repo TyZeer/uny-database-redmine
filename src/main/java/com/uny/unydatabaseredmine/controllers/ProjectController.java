@@ -112,7 +112,7 @@ public class ProjectController {
         List<Task> suitableTasks = tasks.stream().filter(task -> !Objects.equals(task.getProjectId(), project.getId())).toList();
         model.addAttribute("project", project);
         model.addAttribute("tasks", suitableTasks);
-        return "assign_task_to_project";  // This is the new template where users will assign tasks
+        return "assign_task_to_project";
     }
 
     @PostMapping("/projects/{projectId}/assign-task")
@@ -121,13 +121,13 @@ public class ProjectController {
         Task taskCreated = taskService.getTaskById(task);
 
         if (project != null && task != null) {
-            taskCreated.setProjectId(projectId);  // Link the task to the project
-            taskService.assignTaskToProject(taskCreated.getProjectId(), taskCreated.getId());   // Update the task with the new project
+            taskCreated.setProjectId(projectId);
+            taskService.assignTaskToProject(taskCreated.getProjectId(), taskCreated.getId());
             redirectAttributes.addFlashAttribute("message", "Task successfully assigned to the project.");
         } else {
             redirectAttributes.addFlashAttribute("error", "Failed to assign task.");
         }
 
-        return "redirect:/projects/" + projectId; // Redirect back to the project details page
+        return "redirect:/projects/" + projectId;
     }
 }

@@ -11,12 +11,8 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      display: flex;
+      background-color: #f8f9fa;
     }
-    h1, h2 {
-      margin-top: 0;
-    }
-    /* Main layout */
     .content {
       flex: 3;
       padding: 20px;
@@ -24,12 +20,14 @@
     .sidebar {
       flex: 1;
       padding: 20px;
-      background-color: #f4f4f9;
-      border-left: 1px solid #ccc;
-    }
-    /* User Info styling */
-    #user-info {
       background-color: #ffffff;
+      border-left: 1px solid #dee2e6;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #user-info {
+      background-color: #f8f9fa;
       padding: 15px;
       border-radius: 5px;
       box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
@@ -40,21 +38,26 @@
     #error-message {
       color: red;
     }
+    .btn-action {
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
-<div class="content">
-  <h1>Welcome to the Main Page</h1>
-  <p>This is the main content area.</p>
-  <div>
-    <button onclick="window.location.href='/projects'">View Projects</button>
-    <button onclick="window.location.href='/tasks'">View Tasks</button>
+<div class="d-flex">
+  <div class="content">
+    <h1 class="mb-4">Welcome to the Main Page</h1>
+    <p>This is the main content area where you can explore projects and tasks.</p>
+    <div class="d-flex gap-3">
+      <button class="btn btn-primary btn-action" onclick="window.location.href='/projects'">View Projects</button>
+      <button class="btn btn-secondary btn-action" onclick="window.location.href='/tasks'">View Tasks</button>
+    </div>
   </div>
-</div>
-<div class="sidebar">
-  <h2>My Account</h2>
-  <div id="user-info">
-    <p>Loading user information...</p>
+  <div class="sidebar">
+    <h2 class="mb-3">My Account</h2>
+    <div id="user-info">
+      <p>Loading user information...</p>
+    </div>
   </div>
 </div>
 
@@ -75,10 +78,10 @@
             .then(userInfo => {
               const userInfoDiv = document.getElementById("user-info");
               userInfoDiv.innerHTML = `
-                    <p><strong>Имя:</strong> ${userInfo.name}</p>
-                    <p><strong>Почта:</strong> ${userInfo.email}</p>
-                    <p><strong>Должность:</strong> ${userInfo.job_title}</p>
-                `;
+          <p><strong>Name:</strong> ${userInfo.name}</p>
+          <p><strong>Email:</strong> ${userInfo.email}</p>
+          <p><strong>Job Title:</strong> ${userInfo.job_title}</p>
+        `;
             })
             .catch(error => {
               console.error(error);
@@ -87,5 +90,6 @@
             });
   });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
