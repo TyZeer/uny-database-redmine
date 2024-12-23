@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Project</title>
+    <title>Изменить проект</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -33,25 +33,25 @@
 </head>
 <body>
 <div class="container">
-    <h1>Edit Project</h1>
+    <h1>Изменить проект</h1>
     <form th:action="@{/projects/edit/{id}(id=${project.id})}" method="post">
         <div class="form-group">
-            <label for="projectName">Project Name:</label>
+            <label for="projectName">Название:</label>
             <input type="text" id="projectName" name="name" th:value="${project.name}" class="form-control" required>
         </div>
         <div class="form-group">
-            <label for="description">Description:</label>
+            <label for="description">Описание:</label>
             <textarea id="description" name="description" class="form-control" rows="4" required th:text="${project.description}"></textarea>
         </div>
         <div class="form-group">
-            <label for="startDate">Start Date:</label>
+            <label for="startDate">Дата начала:</label>
             <input type="date" id="startDate" name="start_date" th:value="${project.startDate}" class="form-control" required>
         </div>
         <div class="form-group">
-            <label for="endDate">End Date:</label>
+            <label for="endDate">Дата окончания:</label>
             <input type="date" id="endDate" name="end_date" th:value="${project.endDate}" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
