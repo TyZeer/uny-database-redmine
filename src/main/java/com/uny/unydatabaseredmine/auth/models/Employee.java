@@ -27,12 +27,14 @@ public class Employee implements UserDetails {
     private List<Role> roles;
     private String email;
     private String password;
+    private String tgName;
 
-    public Employee(String username, String job_title,String email, String password) {
+    public Employee(String username, String job_title,String email, String password, String tgName) {
         this.name = username;
         this.email = email;
         this.password = password;
         this.job_title = job_title;
+        this.tgName = tgName;
     }
     public Employee(Long id, String username, String job_title,String email, String password) {
         this.id = id;
@@ -41,6 +43,7 @@ public class Employee implements UserDetails {
         this.password = password;
         this.job_title = job_title;
     }
+
 
 
 

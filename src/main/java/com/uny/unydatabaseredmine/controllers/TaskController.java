@@ -1,27 +1,31 @@
 package com.uny.unydatabaseredmine.controllers;
 
 import com.uny.unydatabaseredmine.auth.config.RoleUtil;
+import com.uny.unydatabaseredmine.auth.models.Employee;
 import com.uny.unydatabaseredmine.models.Comment;
 import com.uny.unydatabaseredmine.models.Severity;
 import com.uny.unydatabaseredmine.models.Task;
 import com.uny.unydatabaseredmine.services.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @PreAuthorize("hasRole('USER')  or hasRole('ADMIN')")
 public class TaskController {
 
+    private static final String BOT_API_URL = "http://your-bot-api-url/send-tasks";
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -124,8 +128,7 @@ public class TaskController {
     }
     @PostMapping("/tasks/{taskId}/add-comment")
     public String addCommentToTask(@PathVariable Long taskId, @RequestParam String commentText, RedirectAttributes redirectAttributes, HttpSession session) {
-        // Assuming the employeeId is taken from the logged-in user (for example, from session)
-        Long employeeId = RoleUtil.getUserId(session); // Method to fetch the logged-in user's ID
+        Long employeeId = RoleUtil.getUserId(session);
         Comment newComment = new Comment();
         newComment.setTaskId(taskId);
         newComment.setEmployeeId(employeeId);
@@ -135,14 +138,33 @@ public class TaskController {
         commentService.saveComment(newComment);
 
         redirectAttributes.addFlashAttribute("message", "Comment added successfully.");
-        return "redirect:/tasks/" + taskId;  // Redirect back to the task details page
+        return "redirect:/tasks/" + taskId;
     }
 
     @PostMapping("/tasks/{taskId}/assign-employee")
     public String assignEmployeeToTask(@PathVariable Long taskId, @RequestParam Long employeeId, @RequestParam String severity) {
         taskAssigneesService.save(taskId, employeeId, Severity.valueOf(severity));
+        Employee emp = employeeService.getFullEmployeeById(employeeId);
+        if(emp.getTgName() != null){
+            sendInfoToBot(taskService.getTaskById(taskId), emp.getTgName());
+        }
         return "redirect:/tasks/" + taskId;
     }
 
+    public ResponseEntity<String> sendInfoToBot(Task task, String tgName) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("username", tgName);
+        payload.put("task", task);
+        RestTemplate restTemplate = new RestTemplate();
+        String botResponse = restTemplate.postForObject(BOT_API_URL, payload, String.class);
 
+        return ResponseEntity.ok("Tasks sent to user: " + botResponse);
+    }
+
+    @GetMapping("/api/tg/all-tasks")
+    public ResponseEntity<?> getAllTasksForAllUsers() {
+        Map<String, List<Task>> tasksForUsers = taskService.getTasksForAllUsers();
+        return ResponseEntity.ok(tasksForUsers);
+
+    }
 }

@@ -1,18 +1,23 @@
 package com.uny.unydatabaseredmine.services;
 
+import com.uny.unydatabaseredmine.auth.models.Employee;
+import com.uny.unydatabaseredmine.auth.repos.EmployeeRepository;
 import com.uny.unydatabaseredmine.models.Task;
 import com.uny.unydatabaseredmine.repos.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    private TaskAssigneesService taskAssigneesService;
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
@@ -43,6 +48,19 @@ public class TaskService {
                 task.getTotalTimeSpent(),
                 task.isCompleted()
         );
+    }
+    public Map<String, List<Task>> getTasksForAllUsers() {
+        List<Employee> employeesTg = employeeRepository.findAllWithTgName();
+        Map<String, List<Task>> tasksForAllUsers = new HashMap<>();
+        for (Employee employee : employeesTg) {
+            List<Task> tasks = new ArrayList<>();
+            List<Long> ids = taskAssigneesService.getAllTasksIdByEmployee(employee.getId());
+            for (Long id : ids) {
+                tasks.add(getTaskById(id));
+            }
+            tasksForAllUsers.put(employee.getTgName(), tasks);
+        }
+        return tasksForAllUsers;
     }
 
     public Task getTaskById(Long id) {

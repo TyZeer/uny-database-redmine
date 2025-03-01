@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 ;import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class TaskAssigneesRepository {
@@ -27,6 +28,10 @@ public class TaskAssigneesRepository {
     public Long getAssignedEmployees(Long taskId) {
         String sql = "SELECT employee_id FROM task_assignees WHERE task_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, taskId);
+    }
+    public List<Long> getAllTasksByAssignee(Long assignee) {
+        String sql = "SELECT task_id FROM task_assignees WHERE employee_id = ?";
+        return jdbcTemplate.queryForList(sql, new Object[]{assignee}, Long.class);
     }
 
     private TaskAssignees mapRowToAssignee(ResultSet rs, int rowNum) throws SQLException {

@@ -97,7 +97,8 @@ public class AuthController {
             Employee user = new Employee(signUpRequest.getName(),
                     signUpRequest.getJob_title(),
                     signUpRequest.getEmail(),
-                    encoder.encode(signUpRequest.getPassword()));
+                    encoder.encode(signUpRequest.getPassword()),
+                    signUpRequest.getTgName());
 
             Set<Role> roles = new HashSet<>();
 

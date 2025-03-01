@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
+    <title>Проекты</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="mb-4">Projects</h1>
+    <h1 class="mb-4">Проекты</h1>
 
     <!-- Filter Projects -->
     <form method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-5">
-                <input type="text" name="name" class="form-control" placeholder="Filter by name">
+                <input type="text" name="name" class="form-control" placeholder="Поиск по имени">
             </div>
             <div class="col-md-5">
-                <input type="text" name="startDate" class="form-control" placeholder="Filter by start date (yyyy-mm-dd)">
+                <input type="text" name="startDate" class="form-control" placeholder="Поиск по дате (yyyy-mm-dd)">
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Filter</button>
+                <button type="submit" class="btn btn-primary w-100">Поиск</button>
             </div>
         </div>
     </form>
 
     <!-- Create Project Button (ADMIN only) -->
     <div th:if="${session.role == 'ADMIN'}" class="mb-4">
-        <a href="/projects/create" class="btn btn-success">Create Project</a>
+        <a href="/projects/create" class="btn btn-success">Создать проект</a>
     </div>
 
     <div id="project-container" class="row">
@@ -36,26 +36,30 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="${project.name}"></h5>
                     <p class="card-text" th:text="${project.description}"></p>
-                    <a th:href="'/projects/' + ${project.id}" class="btn btn-primary">View Details</a>
+                    <div>
+                        <img th:if="${project.photoPath != null}"
+                             th:src="${project.photoPath}"
+                             alt="Project Photo"
+                             class="img-thumbnail" style="max-width: 100px;">
+                    </div>
+                    <a th:href="'/projects/' + ${project.id}" class="btn btn-primary mt-2">Просмотреть</a>
 
-                    <!-- Edit and Delete Buttons (ADMIN only) -->
                     <div th:if="${session.role == 'ADMIN'}" class="mt-3">
-                        <a th:href="'/projects/edit/' + ${project.id}" class="btn btn-warning">Edit</a>
+                        <a th:href="'/projects/edit/' + ${project.id}" class="btn btn-warning">Редактировать</a>
                         <form th:action="@{/projects/delete/{id}(id=${project.id})}" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger">Удалить</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Pagination Controls -->
     <div class="d-flex justify-content-center mt-4">
         <ul id="pagination" class="pagination"></ul>
     </div>
 
-    <a href="/" class="btn btn-secondary mt-4">Back to Main</a>
+    <a href="/" class="btn btn-secondary mt-4">Назад на главную</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -86,7 +90,7 @@
             // Previous Button
             const prev = document.createElement("li");
             prev.className = "page-item";
-            prev.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+            prev.innerHTML = `<a class="page-link" href="#">Назад</a>`;
             prev.addEventListener("click", () => {
                 const active = pagination.querySelector(".active");
                 const prevPage = parseInt(active.dataset.page) - 1;
@@ -113,7 +117,7 @@
             // Next Button
             const next = document.createElement("li");
             next.className = "page-item";
-            next.innerHTML = `<a class="page-link" href="#">Next</a>`;
+            next.innerHTML = `<a class="page-link" href="#">Вперед</a>`;
             next.addEventListener("click", () => {
                 const active = pagination.querySelector(".active");
                 const nextPage = parseInt(active.dataset.page) + 1;

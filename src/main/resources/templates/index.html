@@ -46,15 +46,15 @@
 <body>
 <div class="d-flex">
   <div class="content">
-    <h1 class="mb-4">Welcome to the Main Page</h1>
-    <p>This is the main content area where you can explore projects and tasks.</p>
+    <h1 class="mb-4">Добро пожаловать на главный экран</h1>
+    <p>Это главная страница проекта для менеджмента задач</p>
     <div class="d-flex gap-3">
-      <button class="btn btn-primary btn-action" onclick="window.location.href='/projects'">View Projects</button>
-      <button class="btn btn-secondary btn-action" onclick="window.location.href='/tasks'">View Tasks</button>
+      <button class="btn btn-primary btn-action" onclick="window.location.href='/projects'">Смотреть Проекты</button>
+      <button class="btn btn-secondary btn-action" onclick="window.location.href='/tasks'">Смотреть Задачи</button>
     </div>
   </div>
   <div class="sidebar">
-    <h2 class="mb-3">My Account</h2>
+    <h2 class="mb-3">Мой аккаунт</h2>
     <div id="user-info">
       <p>Loading user information...</p>
     </div>
@@ -78,9 +78,9 @@
             .then(userInfo => {
               const userInfoDiv = document.getElementById("user-info");
               userInfoDiv.innerHTML = `
-          <p><strong>Name:</strong> ${userInfo.name}</p>
-          <p><strong>Email:</strong> ${userInfo.email}</p>
-          <p><strong>Job Title:</strong> ${userInfo.job_title}</p>
+          <p><strong>Имя:</strong> ${userInfo.name}</p>
+          <p><strong>Почта:</strong> ${userInfo.email}</p>
+          <p><strong>Должность:</strong> ${userInfo.job_title}</p>
         `;
             })
             .catch(error => {

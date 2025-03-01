@@ -33,15 +33,15 @@
 </head>
 <body>
 <div class="container">
-    <h1>Edit Task</h1>
+    <h1>Редактировать задачу</h1>
     <form th:action="@{/tasks/edit/{id}(id=${task.id})}" method="post" id="editTaskForm">
         <div class="form-group">
-            <label for="taskName">Task Name:</label>
+            <label for="taskName">Название задачи:</label>
             <input type="text" id="taskName" name="title" th:value="${task.title}" class="form-control" required>
         </div>
 
         <div class="form-group">
-            <label for="category">Category:</label>
+            <label for="category">Категория:</label>
             <select id="category" name="category" class="form-control" required>
                 <option value="Bug" th:selected="${task.category == 'Bug'}">Bug</option>
                 <option value="Feature" th:selected="${task.category == 'Feature'}">Feature</option>
@@ -51,16 +51,16 @@
         </div>
 
         <div class="form-group">
-            <label for="dueDate">Due Date:</label>
+            <label for="dueDate">Дедлайн:</label>
             <input type="date" id="dueDate" name="dueDate" th:value="${task.dueDate}" class="form-control" required>
         </div>
 
         <div class="form-group">
-            <label for="totalTimeSpent">Total Time Spent (in minutes):</label>
+            <label for="totalTimeSpent">Суммарно затраченное время (в минутах):</label>
             <input type="number" id="totalTimeSpent" name="totalTimeSpent" th:value="${task.totalTimeSpent}" class="form-control" min="0">
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>

@@ -6,6 +6,9 @@ import com.uny.unydatabaseredmine.repos.TaskAssigneesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class TaskAssigneesService {
     @Autowired
@@ -17,5 +20,9 @@ public class TaskAssigneesService {
     public Long getAssignee(Long taskId){
         Long employeeId = taskAssigneesRepository.getAssignedEmployees(taskId);
         return employeeId;
+    }
+    public List<Long> getAllTasksIdByEmployee(Long employeeId){
+        var ids = taskAssigneesRepository.getAllTasksByAssignee(employeeId);
+        return ids == null ? new ArrayList<Long>() : ids;
     }
 }

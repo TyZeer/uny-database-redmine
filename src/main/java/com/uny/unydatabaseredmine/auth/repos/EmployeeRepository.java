@@ -90,13 +90,14 @@ public class EmployeeRepository {
 
     public Employee save(Employee employee) {
         transactionTemplate.execute((TransactionStatus ts) ->{
-            String sql = "INSERT INTO employees (name, email, password, job_title) VALUES (?, ?, ?, ?) " +
+            String sql = "INSERT INTO employees (name, email, password, job_title, tgName) VALUES (?, ?, ?, ?, ?) " +
                     "ON DUPLICATE KEY UPDATE name = VALUES(name), password = VALUES(password)";
             jdbcTemplate.update(sql,
                     employee.getName(),
                     employee.getEmail(),
                     employee.getPassword(),
-                    employee.getJob_title());
+                    employee.getJob_title(),
+                    employee.getTgName());
             Optional<Employee> possibleSave = findByEmailWithoutRole(employee.getEmail());
             if(possibleSave.isPresent()) {
                 if (employee.getRoles() != null) {
@@ -121,11 +122,24 @@ public class EmployeeRepository {
         assert employee != null;
         return employee.getName();
     }
+    public Employee findFullEmployeeById(Long employeeId) {
+        String sql = "SELECT * FROM employees WHERE id = ?";
+        Employee employee = jdbcTemplate.queryForObject(sql, this::mapRowToEmployeeTg,employeeId);
+        assert employee != null;
+        return employee;
+    }
     public List<Employee> findAll() {
         String sql = "SELECT * FROM employees";
         return jdbcTemplate.query(sql,this::mapRowToEmployee);
 
     }
+
+    public List<Employee> findAllWithTgName(){
+
+        String sql = "SELECT * FROM employees WHERE tgName IS NOT NULL";
+        return jdbcTemplate.query(sql,this::mapRowToEmployeeMin);
+    }
+
     private Employee mapRowToEmployee(ResultSet rs, int rowNum) throws SQLException {
         return new Employee(
                 rs.getLong("id"),
@@ -135,5 +149,23 @@ public class EmployeeRepository {
                 rs.getString("password")
         );
     }
+
+    private Employee mapRowToEmployeeTg(ResultSet rs, int rowNum) throws SQLException {
+        return new Employee(
+                rs.getString("name"),
+                rs.getString("job_title"),
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getString("tgName")
+        );
+    }
+
+    private Employee mapRowToEmployeeMin(ResultSet rs, int rowNum) throws SQLException {
+        var emp = new Employee();
+        emp.setId(rs.getLong("id"));
+        emp.setTgName(rs.getString("tgName"));
+        return emp;
+    }
+
 }
 

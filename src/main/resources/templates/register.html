@@ -51,11 +51,12 @@
             <label for="job_title" class="form-label">Job Title:</label>
             <input type="text" class="form-control" th:field="*{job_title}" />
         </div>
+        <div class="mb-3">
+            <label for="tgName" class="form-label">Telegramm Title:</label>
+            <input type="text" class="form-control" th:field="*{tgName}" />
+        </div>
         <div class="d-grid">
             <button type="submit" class="btn btn-primary">Register</button>
-        </div>
-        <div th:if="${error}" class="alert alert-danger mt-3">
-            <p th:text="${error}"></p>
         </div>
     </form>
 </div>

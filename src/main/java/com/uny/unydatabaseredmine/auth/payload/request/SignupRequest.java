@@ -16,6 +16,10 @@ public class SignupRequest  {
 
   @Getter
   @Setter
+  private String tgName;
+
+  @Getter
+  @Setter
   private String name;
 
   @Getter
