@@ -29,7 +29,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="text-center">Assign Task to Project: <span th:text="${project.name}"></span></h1>
+    <h1 class="text-center">Назначить задачу на проект: <span th:text="${project.name}"></span></h1>
     <form th:action="@{/projects/{id}/assign-task(id=${project.id})}" method="post">
         <div class="mb-3">
             <label for="task" class="form-label">Выбрать задачу:</label>
