@@ -1,0 +1,27 @@
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: redmine_db
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - "3306:3306"
+
+  app:
+    build: .
+    container_name: spring_app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/redmine_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      PROJECT_MANAGER_JWTSECRET: Onfd9KdZiL2JotEGIN9tgIqV3XIU0G0s3BjJSrhnC1kU0VnPu2SiIO9pSUJ58U9
+      PROJECT_MANAGER_JWTEXPIRATIONMS: 86400000
+    ports:
+      - "9090:9090"
